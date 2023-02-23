@@ -1,7 +1,16 @@
 import React, { useState } from "react"
+import { useTasksContext } from "../../pages/TasksContext"
 
-const Task = ({ task, handleChangeTask, handleDeleteTask }) => {
+type TaskProps = {
+  task: {
+    text: string
+    id: number
+  }
+}
+
+const Task = ({ task }: TaskProps) => {
   const [isEditing, setIsEditing] = useState(false)
+  const { dispatch } = useTasksContext()
   let content
 
   if (isEditing) {
@@ -9,7 +18,12 @@ const Task = ({ task, handleChangeTask, handleDeleteTask }) => {
       <>
         <input
           value={task.text}
-          onChange={(e) => handleChangeTask({ ...task, text: e.target.value })}
+          onChange={(e) => {
+            dispatch({
+              type: "changed",
+              task: { ...task, text: e.target.value },
+            })
+          }}
           className="border-2 border-gray rounded m-2"
         />
         <button onClick={() => setIsEditing(false)} className="mx-2">
@@ -30,7 +44,13 @@ const Task = ({ task, handleChangeTask, handleDeleteTask }) => {
   return (
     <>
       {content}
-      <button onClick={() => handleDeleteTask(task.id)}>Remover</button>
+      <button
+        onClick={() => {
+          dispatch({ type: "deleted", id: task.id })
+        }}
+      >
+        Remover
+      </button>
     </>
   )
 }

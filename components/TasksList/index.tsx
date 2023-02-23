@@ -1,5 +1,6 @@
 import React from "react"
 import Task from "../Task"
+import { useTasksContext } from "../../pages/TasksContext"
 
 type TaskProps = {
   id: number
@@ -7,38 +8,30 @@ type TaskProps = {
   done: boolean
 }
 
-type TasksProps = {
-  tasks: TaskProps[]
-  handleDeleteTask: (task: any) => void
-  handleChangeTask: (taskId: any) => void
-}
+const TasksList = () => {
+  const { tasks, dispatch } = useTasksContext()
 
-const TasksList = ({
-  tasks,
-  handleDeleteTask,
-  handleChangeTask,
-}: TasksProps) => {
   return (
     <ul>
-      {tasks.map((task) => (
-        <div className="flex justify-between" key={task.id}>
-          <input
-            type="checkbox"
-            checked={task.done}
-            onChange={(e) =>
-              handleChangeTask({ ...task, done: e.target.checked })
-            }
-          />
-
-          <li className="flex justify-end">
-            <Task
-              task={task}
-              handleDeleteTask={handleDeleteTask}
-              handleChangeTask={handleChangeTask}
+      {tasks &&
+        tasks.map((task: TaskProps) => (
+          <div className="flex justify-between" key={task.id}>
+            <input
+              type="checkbox"
+              checked={task.done}
+              onChange={(e) => {
+                dispatch({
+                  type: "changed",
+                  task: { ...task, done: e.target.checked },
+                })
+              }}
             />
-          </li>
-        </div>
-      ))}
+
+            <li className="flex justify-end">
+              <Task task={task} />
+            </li>
+          </div>
+        ))}
     </ul>
   )
 }
